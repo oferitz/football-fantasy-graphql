@@ -11,6 +11,10 @@ import { playerType } from './player';
 import { getPlayer } from '../data/players';
 import { getUser } from '../data/users';
 
+import { getTeamPlayersUsingTeamId } from '../data/loaders';
+import DataLoader from 'dataloader'
+
+const PlayerByTeamIdLoader = new DataLoader(getTeamPlayersUsingTeamId);
 
 export const teamType = new GraphQLObjectType({
   name: 'Team',
@@ -42,7 +46,7 @@ export const teamType = new GraphQLObjectType({
     players: {
       type: new GraphQLList(playerType),
       description: 'All the players in a team.',
-      resolve: ({players}) => players.map(getPlayer)
+      resolve: ({teamId}) => PlayerByTeamIdLoader.load(teamId)
     },
     user: {
       type: userType,
